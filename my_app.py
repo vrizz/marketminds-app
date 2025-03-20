@@ -251,30 +251,25 @@ multi_agent = initialize_agent(tools=agents, llm=llm, agent="zero-shot-react-des
 
 st.title("MarketMinds")
 
-st.write("""  
-    This tool utilizes **AI agents** to analyze financial sentiment and stock price trends, helping you gain deeper market insights.  
+with st.sidebar:
+    st.write("""MarketMinds utilizes **AI agents** to analyze financial sentiment and stock price trends, helping you gain deeper market insights.""")
 
-    ### 🔹 Features:  
-    - **📈 Sentiment Analysis**: AI agents track sentiment trends for companies like Tesla, Nvidia, and Palantir.  
-    - **💰 Stock Price Tracking**: View stock prices for Tesla, IBM, Apple, and more over custom periods.  
-    - **📊 Correlation Matrix**: Calculate relationships between daily closing prices of multiple stocks.  
-    - **🔍 Sentiment vs. Price Trends**: Compare sentiment data with stock price movements over time.  
+    with st.expander("Features"):
+        st.write("""
+        - **📈 Sentiment Analysis**: AI agents track sentiment trends for companies like Tesla, Nvidia, and Palantir.
+        - **💰 Stock Price Tracking**: View stock prices for Tesla, IBM, Apple, and more over custom periods.
+        - **📊 Correlation Matrix**: Calculate relationships between daily closing prices of multiple stocks.
+        - **🔍 Sentiment vs. Price Trends**: Compare sentiment data with stock price movements over time.
+        """)
 
-    Gain smarter financial insights with the power of AI agents! 🚀  
-""")
+    with st.expander("Example Usage"):
+        st.write("""
+        - **What are the sentiments for Nvidia and Palantir?**
+        - **What are the stocks for IBM and Apple over the last two weeks?**
+        - **For Apple, Ford, and Amazon, calculate the correlation matrix based on daily close prices between 2024-07-01 and 2024-12-31.**
+        - **Show the sentiment vs. price trends for Tesla over the last 3 weeks.**
+        """)
 
-st.write("### Example Usage:")
-
-st.write("""
-- **What is the sentiment for Tesla over the last 2 weeks?**
-- **What is the stock for Tesla over the last 2 weeks?**
-- **What are the sentiments for Nvidia and Palantir?**
-- **What are the stocks for IBM and Apple over the last two weeks?**
-- **For Apple, Ford, and Amazon, calculate the correlation matrix based on daily close prices between 2024-07-01 and 2024-12-31.**
-- **Show the sentiment vs. price trends for Tesla over the last 3 weeks.**
-""")
-
-st.markdown("---")
 
 user_query = st.text_input("💬 **Enter your query:**", placeholder="What are the sentiments for Nvidia and Palantir?")
 
