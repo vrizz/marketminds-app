@@ -1,4 +1,3 @@
-import os
 from collections import defaultdict
 from datetime import datetime
 
@@ -8,15 +7,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-from dotenv import load_dotenv
 from langchain.agents import initialize_agent
 from langchain.tools import Tool
 from langchain_openai import ChatOpenAI
 
-load_dotenv()
-
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-ALPHAVANTAGE_API_KEY = os.getenv("ALPHAVANTAGE_PREMIUM_API_KEY")
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+ALPHAVANTAGE_API_KEY = st.secrets["ALPHAVANTAGE_PREMIUM_API_KEY"]
 
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
@@ -114,7 +110,7 @@ def fetch_stock_prices(query):
         fig.add_trace(go.Scatter(x=df["date"], y=df["close"], mode="lines+markers", name=ticker))
 
     fig.update_layout(title="Stock Price Over Time", xaxis_title="Date", yaxis_title="Stock Price (USD)",
-        xaxis=dict(tickangle=45), legend_title="Stock Symbols", template="plotly_white")
+                      xaxis=dict(tickangle=45), legend_title="Stock Symbols", template="plotly_white")
 
     st.plotly_chart(fig)
     return f"Stock prices for {stock_symbols} from {start_date} plotted successfully."
@@ -199,9 +195,9 @@ def analyze_sentiment_vs_price(query):
                      labels={"sentiment_score": "Sentiment Score", "close": "Close Price"}, )
     fig.update_traces(marker=dict(size=10))
     fig.update_layout(xaxis=dict(showgrid=True), yaxis=dict(showgrid=True), legend=dict(x=1.05, y=1),
-        # Move legend outside the plot
-        margin=dict(l=0, r=0, t=30, b=0)  # Adjust margins
-    )
+                      # Move legend outside the plot
+                      margin=dict(l=0, r=0, t=30, b=0)  # Adjust margins
+                      )
     st.plotly_chart(fig, use_container_width=True)
     return f"Sentiment vs. Price trends for {stock_symbols} from {start_date} to {end_date} plotted successfully."
 
@@ -233,23 +229,23 @@ def stocks_correlation(query):
 
 
 news_sentiment_tool = Tool("News Sentiment Agent", func=news_sentiment,
-    description="Fetches sentiment scores from Alpha Vantage for multiple companies. DO NOT USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
+                           description="Fetches sentiment scores from Alpha Vantage for multiple companies. DO NOT USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
 
 stock_tool = Tool(name="Stock Price Agent", func=fetch_stock_prices,
-    description="Fetches stock from Alpha Vantage for multiple companies. DO NOT USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
+                  description="Fetches stock from Alpha Vantage for multiple companies. DO NOT USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
 
 sentiment_price_tool = Tool(name="Sentiment vs Stock Agent", func=analyze_sentiment_vs_price,
-    description="Sentiment vs Stock Price from Alpha Vantage for a single company. Use this tool to compare sentiment scores with stock price movements over a specific time period. Uses LLM to infer stock symbols and parse time periods."
+                            description="Sentiment vs Stock Price from Alpha Vantage for a single company. Use this tool to compare sentiment scores with stock price movements over a specific time period. Uses LLM to infer stock symbols and parse time periods."
 
-)
+                            )
 
 correlation_tool = Tool(name="Stock Correlation Agent", func=stocks_correlation,
-    description="Compute correlation matrix for multiple companies. USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
+                        description="Compute correlation matrix for multiple companies. USE FOR correlation matrix. Uses LLM to infer stock symbols and parse time periods.")
 
 agents = [stock_tool, news_sentiment_tool, sentiment_price_tool, correlation_tool]
 multi_agent = initialize_agent(tools=agents, llm=llm, agent="zero-shot-react-description",
-    # Enables auto-selection of tools
-)
+                               # Enables auto-selection of tools
+                               )
 
 # Add nice layout
 
